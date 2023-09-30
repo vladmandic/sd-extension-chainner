@@ -2,13 +2,13 @@ import os
 import PIL.Image
 import numpy as np
 import torch
-from modules import devices, modelloader, script_callbacks
-from modules.shared import opts, log, OptionInfo, paths
-from modules.upscaler import Upscaler, UpscalerData
 from nodes.impl.upscale.tiler import MaxTileSize, NoTiling, Tiler
 from nodes.impl.pytorch.auto_split import pytorch_auto_split
 from nodes.load_model import load_model
 from nodes.impl.pytorch.types import PyTorchSRModel
+from modules import devices, modelloader, script_callbacks
+from modules.shared import opts, log, OptionInfo, paths
+from modules.upscaler import Upscaler, UpscalerData
 
 
 chainner_models = [
@@ -84,20 +84,20 @@ class UpscalerChaiNNer(Upscaler):
             raise ValueError(f"ChaiNNer invalid tile size: {tile_size}")
         return MaxTileSize(tile_size)
 
-    def do_upscale(self, img: PIL.Image.Image, selected_file):
+    def do_upscale(self, img: PIL.Image.Image, selected_model):
         devices.torch_gc()
-        model = self.load_model(selected_file)
+        model = self.load_model(selected_model)
         if model is None:
             return img
         np_img = np.array(img)
         tile_size = opts.data.get('upscaler_tile_size', 192)
         with torch.no_grad():
             upscaled = pytorch_auto_split(img=np_img, model=model, device=devices.device, use_fp16=self.fp16, tiler=self.parse_tile_size_input(tile_size))
-            img = PIL.Image.fromarray(np.uint8(256 * upscaled))
+            img = PIL.Image.fromarray(np.uint8(250.0 * upscaled)) # TODO full range causes some color clipping?
         devices.torch_gc()
-        if opts.data.get('upscaler_unload', False) and selected_file in self.models:
-            del self.models[selected_file]
-            log.debug(f"Upscaler unloaded: type={self.name} model={selected_file}")
+        if opts.data.get('upscaler_unload', False) and selected_model in self.models:
+            del self.models[selected_model]
+            log.debug(f"Upscaler unloaded: type={self.name} model={selected_model}")
             devices.torch_gc(force=True)
         return img
 
