@@ -99,7 +99,7 @@ def PixTransform(
     elif params.loss == "l1":
         myloss = torch.nn.L1Loss()
     else:
-        assert False, "unknown loss!"
+        raise AssertionError("unknown loss!")
     ###############################################################################################
 
     epochs = params.batch_size * params.iteration // (M * M)

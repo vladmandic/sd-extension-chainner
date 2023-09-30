@@ -1,14 +1,10 @@
 from __future__ import annotations
-
 from weakref import WeakKeyDictionary
-
 import onnxruntime as ort
-
-from .model import OnnxModel
 
 
 def create_inference_session(
-    model: OnnxModel,
+    model,
     gpu_index: int,
     execution_provider: str,
     should_tensorrt_fp16: bool = False,
@@ -51,12 +47,12 @@ def create_inference_session(
 
 
 __session_cache: WeakKeyDictionary[
-    OnnxModel, ort.InferenceSession
+    any, ort.InferenceSession
 ] = WeakKeyDictionary()
 
 
 def get_onnx_session(
-    model: OnnxModel,
+    model: any,
     gpu_index: int,
     execution_provider: str,
     should_tensorrt_fp16: bool,

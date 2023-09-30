@@ -1,17 +1,13 @@
 from __future__ import annotations
-
 import gc
-
 import numpy as np
-import onnxruntime as ort
-
 from ..upscale.auto_split import Tiler, auto_split
 from .np_tensor_utils import np2nptensor, nptensor2np
 
 
 def onnx_auto_split(
     img: np.ndarray,
-    session: ort.InferenceSession,
+    session,
     change_shape: bool,
     tiler: Tiler,
 ) -> np.ndarray:

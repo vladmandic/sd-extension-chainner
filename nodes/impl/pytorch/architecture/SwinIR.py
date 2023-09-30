@@ -845,7 +845,6 @@ class SwinIR(nn.Module):
         num_feat = 64
         num_in_ch = in_chans
         num_out_ch = in_chans
-        supports_fp16 = True
         self.start_unshuffle = 1
 
         self.model_arch = "SwinIR"
@@ -863,7 +862,6 @@ class SwinIR(nn.Module):
                 upsampler = "nearest+conv"
             else:
                 upsampler = "pixelshuffle"
-                supports_fp16 = False
         elif "upsample.0.weight" in state_keys:
             upsampler = "pixelshuffledirect"
         else:
@@ -1233,7 +1231,7 @@ class SwinIR(nn.Module):
         H, W = self.patches_resolution
         flops += H * W * 3 * self.embed_dim * 9
         flops += self.patch_embed.flops()
-        for i, layer in enumerate(self.layers):
+        for _i, layer in enumerate(self.layers):
             flops += layer.flops()  # type: ignore
         flops += H * W * 3 * self.embed_dim * self.embed_dim
         flops += self.upsample.flops()  # type: ignore

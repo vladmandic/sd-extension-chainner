@@ -1,21 +1,16 @@
 from __future__ import annotations
-
 import tempfile
 from weakref import WeakKeyDictionary
 
 try:
     from ncnn_vulkan import ncnn
-
     use_gpu = True
 except ImportError:
     from ncnn import ncnn
-
     use_gpu = False
 
-from .model import NcnnModelWrapper
 
-
-def create_ncnn_net(model: NcnnModelWrapper, gpu_index: int) -> ncnn.Net:
+def create_ncnn_net(model, gpu_index: int) -> ncnn.Net:
     net = ncnn.Net()
 
     if model.fp == "fp16":
@@ -45,10 +40,10 @@ def create_ncnn_net(model: NcnnModelWrapper, gpu_index: int) -> ncnn.Net:
     return net
 
 
-__session_cache: WeakKeyDictionary[NcnnModelWrapper, ncnn.Net] = WeakKeyDictionary()
+__session_cache: WeakKeyDictionary[any, ncnn.Net] = WeakKeyDictionary()
 
 
-def get_ncnn_net(model: NcnnModelWrapper, gpu_index: int) -> ncnn.Net:
+def get_ncnn_net(model, gpu_index: int) -> ncnn.Net:
     cached = __session_cache.get(model)
     if cached is None:
         cached = create_ncnn_net(model, gpu_index)

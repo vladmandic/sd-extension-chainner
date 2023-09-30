@@ -112,10 +112,10 @@ class Generator(nn.Module):
         self.out_nc: int = self.state["final_conv.pointwise.weight"].shape[0]
         self.num_filters: int = self.state["initial.cnn.pointwise.weight"].shape[0]
         self.num_blocks = len(
-            set([x.split(".")[1] for x in self.state.keys() if "residual" in x])
+            {x.split(".")[1] for x in self.state.keys() if "residual" in x}
         )
         self.scale: int = 2 ** len(
-            set([x.split(".")[1] for x in self.state.keys() if "upsampler" in x])
+            {x.split(".")[1] for x in self.state.keys() if "upsampler" in x}
         )
 
         in_channels = self.in_nc

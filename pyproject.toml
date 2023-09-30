@@ -57,6 +57,7 @@ ignore = [
   "RUF015", # Prefer `next`
   "TID252", # Banned relative imports
   "F405", # Defined from star imports
+  "E722", # Do not use bare except
 ]
 
 [tool.ruff.flake8-bugbear]

@@ -278,11 +278,13 @@ class SCUNet(nn.Module):
         self,
         state_dict,
         in_nc=3,
-        config=[4, 4, 4, 4, 4, 4, 4],
+        config=None,
         dim=64,
         drop_path_rate=0.0,
         input_resolution=256,
     ):
+        if config is None:
+            config = [4, 4, 4, 4, 4, 4, 4]
         super(SCUNet, self).__init__()
         self.model_arch = "SCUNet"
         self.sub_type = "SR"

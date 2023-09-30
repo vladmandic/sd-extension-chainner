@@ -70,7 +70,7 @@ class DropDownInput(BaseInput):
         )
         self.preferred_style: DropDownStyle = preferred_style
 
-        if not self.default in self.accepted_values:
+        if self.default not in self.accepted_values:
             logger.error(f"chaiNNer: invalid default value {self.default} in {label} dropdown. Using first value instead.")
             self.default = options[0]["value"]
 

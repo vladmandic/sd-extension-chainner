@@ -101,8 +101,10 @@ class WindowAttention(nn.Module):
         qkv_bias=True,
         attn_drop=0.0,
         proj_drop=0.0,
-        pretrained_window_size=[0, 0],
+        pretrained_window_size=None,
     ):
+        if pretrained_window_size is None:
+            pretrained_window_size = [0, 0]
         super().__init__()
         self.dim = dim
         self.window_size = window_size  # Wh, Ww
@@ -928,7 +930,6 @@ class Swin2SR(nn.Module):
                 upsampler = "nearest+conv"
             else:
                 upsampler = "pixelshuffle"
-                supports_fp16 = False
         elif "upsample.0.weight" in state_keys:
             upsampler = "pixelshuffledirect"
         else:
@@ -1370,7 +1371,7 @@ class Swin2SR(nn.Module):
         H, W = self.patches_resolution
         flops += H * W * 3 * self.embed_dim * 9
         flops += self.patch_embed.flops()
-        for i, layer in enumerate(self.layers):
+        for _i, layer in enumerate(self.layers):
             flops += layer.flops()  # type: ignore
         flops += H * W * 3 * self.embed_dim * self.embed_dim
         flops += self.upsample.flops()  # type: ignore

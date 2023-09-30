@@ -2,10 +2,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Literal, Optional, Type, TypedDict, Union
+from typing import List, Literal, Optional, Type, TypedDict, Union, TYPE_CHECKING
 
-import navi
 from base_types import InputId
+
+if TYPE_CHECKING:
+    import navi
 
 InputKind = Literal[
     "number",

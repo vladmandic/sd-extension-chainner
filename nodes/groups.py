@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Iterable, List, Literal, Tuple, TypedDict, Union
+from typing import Iterable, List, Literal, Tuple, TypedDict, Union, TYPE_CHECKING
 
-import navi
 from base_types import InputId
-from nodes.base_input import BaseInput
 from nodes.group import NestedGroup, group
+
+if TYPE_CHECKING:
+    import navi
+    from nodes.base_input import BaseInput
 
 InputValue = Union[int, str]
 EnumValues = Union[

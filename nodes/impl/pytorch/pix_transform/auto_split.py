@@ -1,10 +1,7 @@
 from __future__ import annotations
-
 import gc
-
 import numpy as np
 import torch
-
 from ....utils.utils import Region, Size, get_h_w_c
 from ...image_op import to_op
 from ...upscale.auto_split import Split, auto_split
@@ -58,7 +55,7 @@ def pix_transform_auto_split(
 
     assert (
         g_h > s_h and g_w > s_w
-    ), f"The guide image mus be larger than the source image."
+    ), "The guide image mus be larger than the source image."
     assert (
         g_w / s_w == g_w // s_w and g_w / s_w == g_h / s_h
     ), "The size of the guide image must be an integer multiple of the size of the source image (e.g. 2x, 3x, 4x, ...)."

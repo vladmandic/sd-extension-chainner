@@ -142,7 +142,7 @@ class FourierUnit(nn.Module):
 
         # (batch, c, h, w/2+1, 2)
         fft_dim = (-3, -2, -1) if self.ffc3d else (-2, -1)
-        if half_check == True:
+        if half_check is True:
             ffted = torch.fft.rfftn(
                 x.float(), dim=fft_dim, norm=self.fft_norm
             )  # .type(torch.cuda.HalfTensor)
@@ -176,7 +176,7 @@ class FourierUnit(nn.Module):
         if self.use_se:
             ffted = self.se(ffted)
 
-        if half_check == True:
+        if half_check is True:
             ffted = self.conv_layer(ffted.half())  # (batch, c*2, h, w/2+1)
         else:
             ffted = self.conv_layer(
@@ -207,7 +207,7 @@ class FourierUnit(nn.Module):
             ffted, s=ifft_shape_slice, dim=fft_dim, norm=self.fft_norm
         )
 
-        if half_check == True:
+        if half_check is True:
             output = output.half()
 
         if self.spatial_scale_factor is not None:
@@ -529,15 +529,25 @@ class FFCResNetGenerator(nn.Module):
         activation_layer=nn.ReLU,
         up_norm_layer=nn.BatchNorm2d,
         up_activation=nn.ReLU(True),
-        init_conv_kwargs={},
-        downsample_conv_kwargs={},
-        resnet_conv_kwargs={},
+        init_conv_kwargs=None,
+        downsample_conv_kwargs=None,
+        resnet_conv_kwargs=None,
         spatial_transform_layers=None,
-        spatial_transform_kwargs={},
+        spatial_transform_kwargs=None,
         max_features=1024,
         out_ffc=False,
-        out_ffc_kwargs={},
+        out_ffc_kwargs=None,
     ):
+        if out_ffc_kwargs is None:
+            out_ffc_kwargs = {}
+        if spatial_transform_kwargs is None:
+            spatial_transform_kwargs = {}
+        if resnet_conv_kwargs is None:
+            resnet_conv_kwargs = {}
+        if downsample_conv_kwargs is None:
+            downsample_conv_kwargs = {}
+        if init_conv_kwargs is None:
+            init_conv_kwargs = {}
         assert n_blocks >= 0
         super().__init__()
         """

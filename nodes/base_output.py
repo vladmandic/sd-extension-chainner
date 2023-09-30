@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from typing import Literal, Type, Union
+from typing import Literal, Type, Union, TYPE_CHECKING
 
-import navi
 from base_types import OutputId
+
+if TYPE_CHECKING:
+    import navi
 
 OutputKind = Literal["image", "large-image", "tagged", "generic"]
 

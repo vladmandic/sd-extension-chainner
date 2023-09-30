@@ -188,7 +188,7 @@ class CholeskyDecomposition(object):
 def ichol(  # pylint: disable=dangerous-default-value
     A,
     discard_threshold=1e-4,
-    shifts=[0.0, 1e-4, 1e-3, 1e-2, 0.1, 0.5, 1.0, 10.0, 100, 1e3, 1e4, 1e5],
+    shifts=None,
     max_nnz=int(4e9 / 16),
     relative_discard_threshold=0.0,
     diag_keep_discarded=True,
@@ -242,6 +242,8 @@ def ichol(  # pylint: disable=dangerous-default-value
     array([-1.,  1.])
     """
 
+    if shifts is None:
+        shifts = [0.0, 0.0001, 0.001, 0.01, 0.1, 0.5, 1.0, 10.0, 100, 1000.0, 10000.0, 100000.0]
     if isinstance(A, scipy.sparse.csr_matrix):
         A = A.T
 

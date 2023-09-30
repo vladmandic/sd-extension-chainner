@@ -329,7 +329,7 @@ class VQAutoEncoder(nn.Module):
         ch_mult,
         quantizer="nearest",
         res_blocks=2,
-        attn_resolutions=[16],
+        attn_resolutions=None,
         codebook_size=1024,
         emb_dim=256,
         beta=0.25,
@@ -337,6 +337,8 @@ class VQAutoEncoder(nn.Module):
         gumbel_kl_weight=1e-8,
         model_path=None,
     ):
+        if attn_resolutions is None:
+            attn_resolutions = [16]
         super().__init__()
         self.in_channels = 3
         self.nf = nf
@@ -618,7 +620,7 @@ class CodeFormer(VQAutoEncoder):
 
         try:
             n_layers = len(
-                set([x.split(".")[1] for x in state_dict.keys() if "ft_layers" in x])
+                {x.split(".")[1] for x in state_dict.keys() if "ft_layers" in x}
             )
         except:
             pass

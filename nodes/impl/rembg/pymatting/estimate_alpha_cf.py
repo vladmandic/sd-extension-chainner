@@ -7,7 +7,7 @@ from .util import sanity_check_image, trimap_split
 
 
 def estimate_alpha_cf(  # pylint: disable=dangerous-default-value
-    image, trimap, preconditioner=None, laplacian_kwargs={}, cg_kwargs={}
+    image, trimap, preconditioner=None, laplacian_kwargs=None, cg_kwargs=None
 ):
     """
     Estimate alpha from an input image and an input trimap using Closed-Form Alpha Matting as proposed by :cite:`levin2007closed`.
@@ -44,6 +44,10 @@ def estimate_alpha_cf(  # pylint: disable=dangerous-default-value
     ...     laplacian_kwargs={"epsilon": 1e-6},
     ...     cg_kwargs={"maxiter":2000})
     """
+    if cg_kwargs is None:
+        cg_kwargs = {}
+    if laplacian_kwargs is None:
+        laplacian_kwargs = {}
     if preconditioner is None:
         preconditioner = ichol
 

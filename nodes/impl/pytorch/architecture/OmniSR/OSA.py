@@ -254,7 +254,7 @@ class Attention(nn.Module):
 
         # split heads
 
-        q, k, v = map(lambda t: rearrange(t, "b n (h d ) -> b h n d", h=h), (q, k, v))
+        q, k, v = (rearrange(t, "b n (h d ) -> b h n d", h=h) for t in (q, k, v))
 
         # scale
 
@@ -333,16 +333,13 @@ class Block_Attention(nn.Module):
 
         # split heads
 
-        q, k, v = map(
-            lambda t: rearrange(
+        q, k, v = (rearrange(
                 t,
                 "b (h d) (x w1) (y w2) -> (b x y) h (w1 w2) d",
                 h=self.heads,
                 w1=self.ps,
                 w2=self.ps,
-            ),
-            (q, k, v),
-        )
+            ) for t in (q, k, v))
 
         # scale
 
@@ -401,16 +398,13 @@ class Channel_Attention(nn.Module):
         qkv = self.qkv_dwconv(self.qkv(x))
         qkv = qkv.chunk(3, dim=1)
 
-        q, k, v = map(
-            lambda t: rearrange(
+        q, k, v = (rearrange(
                 t,
                 "b (head d) (h ph) (w pw) -> b (h w) head d (ph pw)",
                 ph=self.ps,
                 pw=self.ps,
                 head=self.heads,
-            ),
-            qkv,
-        )
+            ) for t in qkv)
 
         q = F.normalize(q, dim=-1)
         k = F.normalize(k, dim=-1)
@@ -461,16 +455,13 @@ class Channel_Attention_grid(nn.Module):
         qkv = self.qkv_dwconv(self.qkv(x))
         qkv = qkv.chunk(3, dim=1)
 
-        q, k, v = map(
-            lambda t: rearrange(
+        q, k, v = (rearrange(
                 t,
                 "b (head d) (h ph) (w pw) -> b (ph pw) head d (h w)",
                 ph=self.ps,
                 pw=self.ps,
                 head=self.heads,
-            ),
-            qkv,
-        )
+            ) for t in qkv)
 
         q = F.normalize(q, dim=-1)
         k = F.normalize(k, dim=-1)

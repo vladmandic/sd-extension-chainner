@@ -172,7 +172,7 @@ class Spatial_Attention(nn.Module):
         self,
         dim,
         idx,
-        split_size=[8, 8],
+        split_size=None,
         dim_out=None,
         num_heads=6,
         attn_drop=0.0,
@@ -180,6 +180,8 @@ class Spatial_Attention(nn.Module):
         qk_scale=None,
         position_bias=True,
     ):
+        if split_size is None:
+            split_size = [8, 8]
         super().__init__()
         self.dim = dim
         self.dim_out = dim_out or dim
@@ -311,8 +313,8 @@ class Adaptive_Spatial_Attention(nn.Module):
         dim,
         num_heads,
         reso=64,
-        split_size=[8, 8],
-        shift_size=[1, 2],
+        split_size=None,
+        shift_size=None,
         qkv_bias=False,
         qk_scale=None,
         drop=0.0,
@@ -320,6 +322,10 @@ class Adaptive_Spatial_Attention(nn.Module):
         rg_idx=0,
         b_idx=0,
     ):
+        if shift_size is None:
+            shift_size = [1, 2]
+        if split_size is None:
+            split_size = [8, 8]
         super().__init__()
         self.dim = dim
         self.num_heads = num_heads
@@ -685,8 +691,8 @@ class DATB(nn.Module):
         dim,
         num_heads,
         reso=64,
-        split_size=[2, 4],
-        shift_size=[1, 2],
+        split_size=None,
+        shift_size=None,
         expansion_factor=4.0,
         qkv_bias=False,
         qk_scale=None,
@@ -698,6 +704,10 @@ class DATB(nn.Module):
         rg_idx=0,
         b_idx=0,
     ):
+        if shift_size is None:
+            shift_size = [1, 2]
+        if split_size is None:
+            split_size = [2, 4]
         super().__init__()
 
         self.norm1 = norm_layer(dim)
@@ -775,7 +785,7 @@ class ResidualGroup(nn.Module):
         dim,
         reso,
         num_heads,
-        split_size=[2, 4],
+        split_size=None,
         expansion_factor=4.0,
         qkv_bias=False,
         qk_scale=None,
@@ -789,6 +799,8 @@ class ResidualGroup(nn.Module):
         resi_connection="1conv",
         rg_idx=0,
     ):
+        if split_size is None:
+            split_size = [2, 4]
         super().__init__()
         self.use_chk = use_chk
         self.reso = reso
@@ -951,7 +963,6 @@ class DAT(nn.Module):
                 upsampler = "nearest+conv"
             else:
                 upsampler = "pixelshuffle"
-                supports_fp16 = False
         elif "upsample.0.weight" in state_keys:
             upsampler = "pixelshuffledirect"
         else:

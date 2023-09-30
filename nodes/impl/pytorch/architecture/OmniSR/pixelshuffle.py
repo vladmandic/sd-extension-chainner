@@ -19,7 +19,7 @@ def pixelshuffle_block(
     """
     Upsample features according to `upscale_factor`.
     """
-    padding = kernel_size // 2
+    kernel_size // 2
     conv = nn.Conv2d(
         in_channels,
         out_channels * (upscale_factor**2),

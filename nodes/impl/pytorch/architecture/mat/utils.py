@@ -642,16 +642,13 @@ class Conv2dLayer(torch.nn.Module):
         activation="linear",  # Activation function: 'relu', 'lrelu', etc.
         up=1,  # Integer upsampling factor.
         down=1,  # Integer downsampling factor.
-        resample_filter=[
-            1,
-            3,
-            3,
-            1,
-        ],  # Low-pass filter to apply when resampling activations.
+        resample_filter=None,  # Low-pass filter to apply when resampling activations.
         conv_clamp=None,  # Clamp the output to +-X, None = disable clamping.
         channels_last=False,  # Expect the input to have memory_format=channels_last?
         trainable=True,  # Update the weights of this layer during training?
     ):
+        if resample_filter is None:
+            resample_filter = [1, 3, 3, 1]
         super().__init__()
         self.activation = activation
         self.up = up

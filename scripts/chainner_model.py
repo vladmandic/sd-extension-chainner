@@ -7,26 +7,26 @@ from modules.shared import opts, log, OptionInfo, paths
 from modules.upscaler import Upscaler, UpscalerData
 from nodes.impl.upscale.tiler import MaxTileSize, NoTiling, Tiler
 from nodes.impl.pytorch.auto_split import pytorch_auto_split
-from nodes.impl.pytorch.types import PyTorchSRModel
 from nodes.load_model import load_model
+from nodes.impl.pytorch.types import PyTorchSRModel
 
 
 chainner_models = [
-    ["DAT-4x", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/Upscalers/DAT-4x.pth"],
-    ["HAT-2x", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/Upscalers/HAT-2x.pth"],
-    ["HAT-3x", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/Upscalers/HAT-3x.pth"],
-    ["HAT-4x", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/Upscalers/HAT-4x.pth"],
-    ["HAT-Large-2x", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/Upscalers/HAT-L-2x.pth"],
-    ["HAT-Large-3x", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/Upscalers/HAT-L-3x.pth"],
-    ["HAT-Large-4x", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/Upscalers/HAT-L-4x.pth"],
-    ["RRDBNet-4x", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/Upscalers/RRDBNet-4x.pth"],
-    ["RealHAT-GAN-4x", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/Upscalers/RealHAT-GAN-4x.pth"],
-    ["RealHAT-Sharper-4x", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/Upscalers/RealHAT-Sharper-4x.pth"],
-    ["SPSRNet-4x", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/Upscalers/SPSRNet-4x.pth"],
-    ["SRFormer-Light-4x", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/Upscalers/SRFormer-Light-4x.pth"],
-    ["SRFormer-Nomos-4x", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/Upscalers/SRFormer-Nomos-4x.pth"],
-    ["SwiftSR-2x", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/Upscalers/SwiftSR-2x.pth"],
-    ["SwiftSR-4x", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/Upscalers/SwiftSR-4x.pth"],
+    ["4x DAT", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/DAT-4x.pth"],
+    ["2x HAT", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/HAT-2x.pth"],
+    ["3x HAT", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/HAT-3x.pth"],
+    ["4x HAT", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/HAT-4x.pth"],
+    ["2x HAT-Large", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/HAT-L-2x.pth"],
+    ["3x HAT-Large", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/HAT-L-3x.pth"],
+    ["4x HAT-Large", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/HAT-L-4x.pth"],
+    ["4x RRDBNet", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/RRDBNet-4x.pth"],
+    ["4x RealHAT-GAN", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/RealHAT-GAN-4x.pth"],
+    ["4x RealHAT-Sharper", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/RealHAT-Sharper-4x.pth"],
+    ["4x SPSRNet", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/SPSRNet-4x.pth"],
+    ["4x SRFormer-Light", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/SRFormer-Light-4x.pth"],
+    ["4x SRFormer-Nomos", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/SRFormer-Nomos-4x.pth"],
+    ["2x SwiftSR", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/SwiftSR-2x.pth"],
+    ["4x SwiftSR", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/SwiftSR-4x.pth"],
 ]
 
 
