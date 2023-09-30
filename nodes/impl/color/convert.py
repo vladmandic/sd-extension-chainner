@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Callable, Dict, Generic, Iterable, List, Set, Tuple, TypeVar, Union
 
 import numpy as np
-from sanic.log import logger
+from nodes.log import logger
 
 from .convert_data import color_spaces, color_spaces_or_detectors, conversions
 from .convert_model import (

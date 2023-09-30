@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from typing import List, Tuple, Union
 
 import numpy as np
-from sanic.log import logger
+from nodes.log import logger
 
 Size = Tuple[int, int]
 """

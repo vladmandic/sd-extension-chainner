@@ -7,11 +7,11 @@ import warnings
 import torch
 import numpy as np
 from PIL import Image
-from rich import print # pylint: disable=redefined-builtin
 from nodes.impl.upscale.tiler import MaxTileSize, NoTiling, Tiler
 from nodes.impl.pytorch.auto_split import pytorch_auto_split
 from nodes.impl.pytorch.types import PyTorchSRModel
 from nodes.load_model import load_model
+from nodes.log import logger
 
 
 warnings.filterwarnings('ignore', category=UserWarning) # disable those for now as many backends reports tons
@@ -41,16 +41,16 @@ def upscale(image: Image, model: PyTorchSRModel, tile: int = 256):
 if __name__ == "__main__":
     sys.argv.pop(0)
     if len(sys.argv) == 0:
-        print('chainner:', 'no files specified')
+        logger.error('chainner: no files specified')
         sys.exit(1)
     for modelfile in os.listdir('models'):
         try:
             modelname = os.path.splitext(modelfile)[0]
             srmodel: PyTorchSRModel = load_model(os.path.join("models", modelfile), device=device, fp16=fp16)
-            print(f'model="{modelname}" arch="{srmodel.__class__.__name__}" scale={srmodel.scale}')
+            logger.info(f'model="{modelname}" arch="{srmodel.__class__.__name__}" scale={srmodel.scale}')
             for imagename in sys.argv:
                 if not os.path.isfile(imagename):
-                    print(f'image={imagename} not found')
+                    logger.error(f'image={imagename} not found')
                     continue
                 inputimage = Image.open(imagename).convert('RGB')
                 t0 = time.time()
@@ -59,9 +59,10 @@ if __name__ == "__main__":
                 base, ext = os.path.splitext(imagename)
                 outputname = f'{base}-{modelname}{ext}'
                 outputimage.save(outputname)
-                print(f'input="{imagename}" {inputimage.size} output="{outputname}" {outputimage.size} time={t1-t0:.2f}s')
+                logger.info(f'input="{imagename}" {inputimage.size} output="{outputname}" {outputimage.size} time={t1-t0:.2f}s')
             srmodel = None
             torch.cuda.empty_cache()
             torch.cuda.ipc_collect()
+            # sys.exit(1)
         except Exception as e:
-            print(f'Error: fn={modelfile} {e}')
+            logger.error(f'Error: fn={modelfile} {e}')

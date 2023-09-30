@@ -10,7 +10,7 @@ from typing import Optional
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from sanic.log import logger
+from nodes.log import logger
 from torch import Tensor
 
 
@@ -382,12 +382,12 @@ class VQAutoEncoder(nn.Module):
                 self.load_state_dict(
                     torch.load(model_path, map_location="cpu")["params_ema"]
                 )
-                logger.info(f"vqgan is loaded from: {model_path} [params_ema]")
+                logger.info(f"chaiNNer: vqgan is loaded from: {model_path} [params_ema]")
             elif "params" in chkpt:
                 self.load_state_dict(
                     torch.load(model_path, map_location="cpu")["params"]
                 )
-                logger.info(f"vqgan is loaded from: {model_path} [params]")
+                logger.info(f"chaiNNer: vqgan is loaded from: {model_path} [params]")
             else:
                 raise ValueError("Wrong params!")
 

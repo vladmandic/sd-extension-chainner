@@ -12,7 +12,7 @@ except ImportError:
     from ncnn import ncnn
 
     use_gpu = False
-from sanic.log import logger
+from nodes.log import logger
 
 from ...utils.utils import get_h_w_c
 from ..image_utils import to_uint8

@@ -6,7 +6,7 @@ from enum import Enum
 from typing import Dict, Generic, List, Literal, Tuple, Type, TypedDict, TypeVar, Union
 
 import numpy as np
-from sanic.log import logger
+from nodes.log import logger
 
 import navi
 from nodes.base_input import BaseInput, InputConversion
@@ -71,9 +71,7 @@ class DropDownInput(BaseInput):
         self.preferred_style: DropDownStyle = preferred_style
 
         if not self.default in self.accepted_values:
-            logger.error(
-                f"Invalid default value {self.default} in {label} dropdown. Using first value instead."
-            )
+            logger.error(f"chaiNNer: invalid default value {self.default} in {label} dropdown. Using first value instead.")
             self.default = options[0]["value"]
 
         self.associated_type = (

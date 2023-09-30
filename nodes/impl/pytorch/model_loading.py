@@ -1,5 +1,3 @@
-from sanic.log import logger
-
 from .architecture.DAT import DAT
 from .architecture.face.codeformer import CodeFormer
 from .architecture.face.gfpganv1_clean_arch import GFPGANv1Clean
@@ -24,7 +22,7 @@ class UnsupportedModel(Exception):
 
 
 def load_state_dict(state_dict) -> PyTorchModel:
-    logger.debug(f"Loading state dict into pytorch model arch")
+    # logger.debug(f"Loading state dict into pytorch model arch")
 
     state_dict_keys = list(state_dict.keys())
 

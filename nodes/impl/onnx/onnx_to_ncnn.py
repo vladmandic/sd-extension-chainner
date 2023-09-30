@@ -7,7 +7,7 @@ from google.protobuf.internal.containers import (
     RepeatedScalarFieldContainer,
 )
 from onnx.onnx_pb import AttributeProto, GraphProto, ModelProto, NodeProto, TensorProto
-from sanic.log import logger
+from nodes.log import logger
 
 from ..ncnn.model import (
     DTYPE_FP16,
@@ -2989,7 +2989,7 @@ class Onnx2NcnnConverter:
                 axis = get_node_attr_i(node, "axis", 1)
                 layer.add_param(0, axis - 1 if axis > 0 else axis)
             elif op == "Constant":
-                logger.error("Code should not have reached inside Constant.")
+                logger.error("chaiNNer: code should not have reached inside Constant")
             elif op == "Conv":
                 W = self.weights[node.input[1]]
 
@@ -3158,7 +3158,7 @@ class Onnx2NcnnConverter:
                 alpha = get_node_attr_f(node, "alpha", 1)
                 layer.add_param(0, alpha)
             elif op == "EmbedLayerNormalization":
-                logger.error(f"No NCNN documentation for {op} yet, will not function")
+                logger.error(f"chaiNNer: No NCNN documentation for {op} yet, will not function")
                 words = self.weights[node.input[2]]
                 positions = self.weights[node.input[3]]
                 W = self.weights[node.input[5]]
@@ -3558,7 +3558,7 @@ class Onnx2NcnnConverter:
                     layer.add_param(1, 1)
 
                 layer.add_param(4, keepdims)
-                logger.error("No NCNN documentation for Reduction param 5")
+                logger.error("chaiNNer: No NCNN documentation for Reduction param 5")
                 layer.add_param(5, 1)
             elif op == "Reorg":
                 layer.add_param(0, get_node_attr_i(node, "stride", 1))
@@ -3570,7 +3570,7 @@ class Onnx2NcnnConverter:
 
                 shape_size = shape.size
                 if shape_size == 1:
-                    logger.error("Should never reach shape.size == 1 in Reshape")
+                    logger.error("chaiNNer: Should never reach shape.size == 1 in Reshape")
                     layer.add_param(0, int(shape[0]))
                 elif shape_size == 2:
                     layer.add_param(0, int(shape[1]))
@@ -3686,7 +3686,7 @@ class Onnx2NcnnConverter:
             elif op == "Sin":
                 layer.add_param(0, UOT.SIN)
             elif op == "SkipLayerNormalization":
-                logger.error(f"No NCNN documentation for {op} yet, will not function")
+                logger.error(f"chaiNNer: No NCNN documentation for {op} yet, will not function")
                 W = self.weights[node.input[2]]
                 B = self.weights[node.input[3]]
                 B2 = self.weights[node.input[4]]

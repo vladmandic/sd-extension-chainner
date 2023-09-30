@@ -8,7 +8,7 @@ from tempfile import mkdtemp
 from typing import List
 
 import numpy as np
-from sanic.log import logger
+from nodes.log import logger
 
 from ...utils.utils import split_file_path
 from ..image_utils import cv_save_image
@@ -46,17 +46,7 @@ def __run_texconv(args: List[str], error_message: str):
 
     if result.returncode != 0:
         output = (__decode(result.stdout) + __decode(result.stderr)).replace("\r", "")
-        logger.error(
-            "\n".join(
-                [
-                    f"Failed to run texconv.",
-                    f"texconv: {__TEXCONV_EXE}",
-                    f"args: {args}",
-                    f"exit code: {result.returncode}",
-                    f"output: {output}",
-                ]
-            )
-        )
+        logger.error(f"chaiNNer: failed to run texconv: texconv: {__TEXCONV_EXE} args: {args} exit code: {result.returncode} output: {output}")
         raise ValueError(f"{error_message}: Code {result.returncode}: {output}")
 
 

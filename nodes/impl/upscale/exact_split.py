@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Callable, List, Optional, Tuple
 
 import numpy as np
-from sanic.log import logger
+from nodes.log import logger
 
 from ...utils.utils import Padding, Region, Size, get_h_w_c
 from ..image_utils import BorderType, create_border
@@ -101,9 +101,7 @@ def _exact_split_into_regions(
     x_segments = _exact_split_into_segments(w, exact_w, overlap)
     y_segments = _exact_split_into_segments(h, exact_h, overlap)
 
-    logger.info(
-        f"Image is split into {len(x_segments)}x{len(y_segments)} tiles each exactly {exact_w}x{exact_h}px."
-    )
+    logger.info(f"chaiNNer: image is split into {len(x_segments)}x{len(y_segments)} tiles each exactly {exact_w}x{exact_h}px")
 
     result: List[Tuple[Region, Padding]] = []
     for y in y_segments:

@@ -3,15 +3,11 @@
 - Based on amazing [chaiNNer](https://github.com/chaiNNer-org/chaiNNer) project  
 - Original license at [LICENSE](https://github.com/chaiNNer-org/chaiNNer/blob/main/LICENSE)
 
-## TODO
+## Install
 
-- Create an extension
-- Add install requirements
-- Switch logger
-- Upload models
-- Progress bar?
+Add to your extensions: <https://github.com/vladmandic/sd-extension-chainner>
 
-## Test
+## CLI Test
 
 > ./chainner-test.py test/cutie.png
 

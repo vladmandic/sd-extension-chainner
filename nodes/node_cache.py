@@ -7,7 +7,7 @@ from enum import Enum
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
-from sanic.log import logger
+from nodes.log import logger
 
 CACHE_MAX_BYTES = int(os.environ.get("CACHE_MAX_BYTES", 1024**3))  # default 1 GiB
 CACHE_REGISTRY: List["NodeOutputCache"] = []
