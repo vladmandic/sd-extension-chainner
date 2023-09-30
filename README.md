@@ -1,11 +1,15 @@
-# SDNext Upscalers
+# SDNext Upscalers by chaiNNer
 
-Based on amazing [chaiNNer](https://github.com/chaiNNer-org/chaiNNer) project  
-Original license at [LICENSE](https://github.com/chaiNNer-org/chaiNNer/blob/main/LICENSE)
+- Based on amazing [chaiNNer](https://github.com/chaiNNer-org/chaiNNer) project  
+- Original license at [LICENSE](https://github.com/chaiNNer-org/chaiNNer/blob/main/LICENSE)
 
-## Installation
+## TODO
 
-TBD
+- Create an extension
+- Add install requirements
+- Switch logger
+- Upload models
+- Progress bar?
 
 ## Test
 
