@@ -6,9 +6,9 @@ from nodes.impl.upscale.tiler import MaxTileSize, NoTiling, Tiler
 from nodes.impl.pytorch.auto_split import pytorch_auto_split
 from nodes.load_model import load_model
 from nodes.impl.pytorch.types import PyTorchSRModel
-from modules import devices, modelloader, script_callbacks
-from modules.shared import opts, log, OptionInfo, paths
-from modules.upscaler import Upscaler, UpscalerData
+from modules import devices, script_callbacks # pylint: disable=wrong-import-order
+from modules.shared import opts, log, paths, OptionInfo # pylint: disable=wrong-import-order
+from modules.upscaler import Upscaler, UpscalerData # pylint: disable=wrong-import-order
 
 
 chainner_models = [
@@ -30,6 +30,14 @@ chainner_models = [
 ]
 
 
+def friendly_fullname(file: str):
+    from urllib.parse import urlparse
+    if "http" in file:
+        file = urlparse(file).path
+    file = os.path.basename(file)
+    return file
+
+
 class UpscalerChaiNNer(Upscaler):
     def __init__(self, dirname): # pylint: disable=unused-argument
         self.name = "chaiNNer"
@@ -43,7 +51,7 @@ class UpscalerChaiNNer(Upscaler):
         loaded = []
         scalers = []
         for model in chainner_models:
-            local_name = os.path.join(self.user_path, modelloader.friendly_fullname(model[1]))
+            local_name = os.path.join(self.user_path, friendly_fullname(model[1]))
             model_path = local_name if os.path.exists(local_name) else model[1]
             scaler = UpscalerData(name=f'{self.name} {model[0]}', path=model_path, upscaler=self)
             scalers.append(scaler)

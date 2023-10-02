@@ -1,4 +1,4 @@
-# SDNext Upscalers by chaiNNer
+# SD.Next Upscalers by chaiNNer
 
 - Based on amazing [chaiNNer](https://github.com/chaiNNer-org/chaiNNer) project  
 - Original license at [LICENSE](https://github.com/chaiNNer-org/chaiNNer/blob/main/LICENSE)
