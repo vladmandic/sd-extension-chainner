@@ -30,12 +30,6 @@ select = [
 ]
 exclude = [
   "/usr/lib",
-	"extensions",
-  "extensions-builtin",
-  "modules/lora",
-  "modules/lycoris",
-  "modules/dml",
-  "modules/models/diffusion",
 ]
 ignore = [
 	"A003", # Class attirbute shadowing builtin
