@@ -56,6 +56,8 @@ class UpscalerChaiNNer(Upscaler):
             scaler = UpscalerData(name=f'{self.name} {model[0]}', path=model_path, upscaler=self)
             scalers.append(scaler)
             loaded.append(model_path)
+        if not os.path.exists(self.user_path):
+            return scalers
         for fn in os.listdir(self.user_path): # from folder
             if not fn.endswith('.pth'):
                 continue
