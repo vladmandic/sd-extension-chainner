@@ -113,7 +113,7 @@ class OmniSR(nn.Module):
         self.num_feat = num_feat
         self.scale = up_scale
 
-        self.supports_fp16 = True  # TODO: Test this
+        self.supports_fp16 = True
         self.supports_bfp16 = True
         self.min_size_restriction = 16
 
@@ -125,7 +125,7 @@ class OmniSR(nn.Module):
         mod_pad_h = (self.window_size - h % self.window_size) % self.window_size
         mod_pad_w = (self.window_size - w % self.window_size) % self.window_size
         # x = F.pad(x, (0, mod_pad_w, 0, mod_pad_h), 'reflect')
-        x = F.pad(x, (0, mod_pad_w, 0, mod_pad_h), "constant", 0)
+        x = F.pad(x, (0, mod_pad_w, 0, mod_pad_h), "constant", 0) # pylint disable=not-callable
         return x
 
     def forward(self, x):

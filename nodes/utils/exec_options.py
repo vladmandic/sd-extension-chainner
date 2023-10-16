@@ -33,7 +33,6 @@ def get_execution_options() -> ExecutionOptions:
 
 
 def set_execution_options(value: ExecutionOptions):
-    # TODO: Make the mutable global state unnecessary
     # pylint: disable=global-statement
     global __global_exec_options
     __global_exec_options = value

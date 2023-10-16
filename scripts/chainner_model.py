@@ -103,7 +103,8 @@ class UpscalerChaiNNer(Upscaler):
         tile_size = opts.data.get('upscaler_tile_size', 192)
         with torch.no_grad():
             upscaled = pytorch_auto_split(img=np_img, model=model, device=devices.device, use_fp16=self.fp16, tiler=self.parse_tile_size_input(tile_size))
-            img = PIL.Image.fromarray(np.uint8(250.0 * upscaled)) # TODO full range causes some color clipping?
+            # TODO chainner: full range causes some color clipping
+            img = PIL.Image.fromarray(np.uint8(250.0 * upscaled))
         devices.torch_gc()
         if opts.data.get('upscaler_unload', False) and selected_model in self.models:
             del self.models[selected_model]

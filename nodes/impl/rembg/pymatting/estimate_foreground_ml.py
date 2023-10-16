@@ -55,7 +55,6 @@ def _resize_nearest(dst, src):
             dst[y_dst, x_dst] = src[y_src, x_src]
 
 
-# TODO
 # There should be an option to switch @njit(parallel=True) on or off.
 # parallel=True would be faster, but might cause race conditions.
 # User should have the option to turn it on or off.

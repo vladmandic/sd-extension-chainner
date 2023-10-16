@@ -132,7 +132,6 @@ def nptensor2np(
 
     # if rgb2bgr:
     # img_np = img_np[[2, 1, 0], :, :] #RGB to BGR -> in numpy, if using OpenCV, else not needed. Only if image has colors.
-    # TODO: Check: could denormalize in the begining in tensor form instead
     if denormalize:
         img_np = np_denorm(img_np)  # denormalize if needed
     if change_range:

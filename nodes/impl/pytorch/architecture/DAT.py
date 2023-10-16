@@ -1026,7 +1026,6 @@ class DAT(nn.Module):
             state_dict["layers.0.blocks.0.ffn.fc1.weight"].shape[0] / embed_dim
         )
 
-        # TODO: could actually count the layers, but this should do
         if "layers.0.conv.4.weight" in state_keys:
             resi_connection = "3conv"
         else:

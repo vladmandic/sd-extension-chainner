@@ -941,7 +941,6 @@ class SwinIR(nn.Module):
             / embed_dim
         )
 
-        # TODO: could actually count the layers, but this should do
         if "layers.0.conv.4.weight" in state_keys:
             resi_connection = "3conv"
         else:
