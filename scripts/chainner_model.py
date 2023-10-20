@@ -2,6 +2,7 @@ import os
 import PIL.Image
 import numpy as np
 import torch
+import torchvision.transforms as T
 from nodes.impl.upscale.tiler import MaxTileSize, NoTiling, Tiler
 from nodes.impl.pytorch.auto_split import pytorch_auto_split
 from nodes.load_model import load_model
@@ -103,8 +104,8 @@ class UpscalerChaiNNer(Upscaler):
         tile_size = opts.data.get('upscaler_tile_size', 192)
         with torch.no_grad():
             upscaled = pytorch_auto_split(img=np_img, model=model, device=devices.device, use_fp16=self.fp16, tiler=self.parse_tile_size_input(tile_size))
-            # TODO chainner: full range causes some color clipping
-            img = PIL.Image.fromarray(np.uint8(250.0 * upscaled))
+            norm = 255.0 * (upscaled / upscaled.max()) # full range causes some color clipping
+            img = PIL.Image.fromarray(np.uint8(norm))
         devices.torch_gc()
         if opts.data.get('upscaler_unload', False) and selected_model in self.models:
             del self.models[selected_model]
