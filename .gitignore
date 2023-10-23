@@ -2,3 +2,6 @@
 __pycache__/
 models/*
 test/*
+*.json
+*.lock
+!models.json

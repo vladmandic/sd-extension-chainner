@@ -7,29 +7,12 @@ from nodes.impl.upscale.tiler import MaxTileSize, NoTiling, Tiler
 from nodes.impl.pytorch.auto_split import pytorch_auto_split
 from nodes.load_model import load_model
 from nodes.impl.pytorch.types import PyTorchSRModel
-from modules import devices, script_callbacks # pylint: disable=wrong-import-order
-from modules.shared import opts, log, paths, OptionInfo # pylint: disable=wrong-import-order
+from modules import devices, scripts, script_callbacks # pylint: disable=wrong-import-order
+from modules.shared import opts, log, paths, readfile, OptionInfo # pylint: disable=wrong-import-order
 from modules.upscaler import Upscaler, UpscalerData # pylint: disable=wrong-import-order
 
 
-chainner_models = [
-    ["4x DAT", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/DAT-4x.pth"],
-    ["2x HAT", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/HAT-2x.pth"],
-    ["3x HAT", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/HAT-3x.pth"],
-    ["4x HAT", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/HAT-4x.pth"],
-    ["2x HAT-Large", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/HAT-L-2x.pth"],
-    ["3x HAT-Large", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/HAT-L-3x.pth"],
-    ["4x HAT-Large", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/HAT-L-4x.pth"],
-    ["4x RRDBNet", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/RRDBNet-4x.pth"],
-    ["4x RealHAT-GAN", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/RealHAT-GAN-4x.pth"],
-    ["4x RealHAT-Sharper", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/RealHAT-Sharper-4x.pth"],
-    ["4x SPSRNet", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/SPSRNet-4x.pth"],
-    ["4x SRFormer-Light", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/SRFormer-Light-4x.pth"],
-    ["4x SRFormer-Nomos", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/SRFormer-Nomos-4x.pth"],
-    ["2x SwiftSR", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/SwiftSR-2x.pth"],
-    ["4x SwiftSR", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/SwiftSR-4x.pth"],
-]
-
+predefined_models = os.path.join(scripts.basedir(), 'models.json')
 
 def friendly_fullname(file: str):
     from urllib.parse import urlparse
@@ -45,23 +28,30 @@ class UpscalerChaiNNer(Upscaler):
         self.user_path = opts.data.get('chainner_models_path', os.path.join(paths.models_path, 'chaiNNer'))
         super().__init__()
         self.models = {}
+        self.predefined = []
         self.fp16 = False
         self.scalers = self.find_scalers()
+        self.transform = T.Compose([T.ToTensor(), T.ToPILImage()])
 
     def find_scalers(self):
         loaded = []
         scalers = []
-        for model in chainner_models:
+        if self.predefined is None or len(self.predefined) == 0:
+            self.predefined = readfile(predefined_models, silent=False)
+        for model in self.predefined:
             local_name = os.path.join(self.user_path, friendly_fullname(model[1]))
             model_path = local_name if os.path.exists(local_name) else model[1]
             scaler = UpscalerData(name=f'{self.name} {model[0]}', path=model_path, upscaler=self)
             scalers.append(scaler)
             loaded.append(model_path)
+        predefined = len(scalers)
         if not os.path.exists(self.user_path):
             return scalers
+        downloaded = 0
         for fn in os.listdir(self.user_path): # from folder
             if not fn.endswith('.pth'):
                 continue
+            downloaded += 1
             file_name = os.path.join(self.user_path, fn)
             if file_name not in loaded:
                 model_name = os.path.splitext(fn)[0]
@@ -69,6 +59,8 @@ class UpscalerChaiNNer(Upscaler):
                 scaler.custom = True
                 scalers.append(scaler)
                 loaded.append(file_name)
+        discovered = len(scalers) - predefined
+        log.debug(f'chaiNNer models: path="{self.user_path}" defined={predefined} discovered={discovered} downloaded={downloaded}')
         return scalers
 
     def load_model(self, path: str):
@@ -102,10 +94,15 @@ class UpscalerChaiNNer(Upscaler):
             return img
         np_img = np.array(img)
         tile_size = opts.data.get('upscaler_tile_size', 192)
-        with torch.no_grad():
-            upscaled = pytorch_auto_split(img=np_img, model=model, device=devices.device, use_fp16=self.fp16, tiler=self.parse_tile_size_input(tile_size))
-            norm = 255.0 * (upscaled / upscaled.max()) # full range causes some color clipping
-            img = PIL.Image.fromarray(np.uint8(norm))
+        try:
+            with torch.no_grad():
+                upscaled = pytorch_auto_split(img=np_img, model=model, device=devices.device, use_fp16=self.fp16, tiler=self.parse_tile_size_input(tile_size))
+                # norm = 255.0 * torch.from_numpy(upscaled)
+                # norm = 255.0 * (upscaled / upscaled.max()) # full range causes some color clipping
+                # img = PIL.Image.fromarray(np.uint8(norm))
+                img = self.transform(upscaled)
+        except Exception as e:
+            log.error(f"Upscaler error: type={self.name} model={selected_model} error={e}")
         devices.torch_gc()
         if opts.data.get('upscaler_unload', False) and selected_model in self.models:
             del self.models[selected_model]
