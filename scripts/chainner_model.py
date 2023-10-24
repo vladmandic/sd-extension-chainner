@@ -97,10 +97,10 @@ class UpscalerChaiNNer(Upscaler):
         try:
             with torch.no_grad():
                 upscaled = pytorch_auto_split(img=np_img, model=model, device=devices.device, use_fp16=self.fp16, tiler=self.parse_tile_size_input(tile_size))
-                # norm = 255.0 * torch.from_numpy(upscaled)
-                # norm = 255.0 * (upscaled / upscaled.max()) # full range causes some color clipping
-                # img = PIL.Image.fromarray(np.uint8(norm))
-                img = self.transform(upscaled)
+                norm = 255.0 * torch.from_numpy(upscaled)
+                norm = 255.0 * (upscaled / upscaled.max()) # full range causes some color clipping
+                img = PIL.Image.fromarray(np.uint8(norm))
+                # img = self.transform(upscaled)
         except Exception as e:
             log.error(f"Upscaler error: type={self.name} model={selected_model} error={e}")
         devices.torch_gc()
