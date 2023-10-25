@@ -2,11 +2,11 @@ import os
 import PIL.Image
 import numpy as np
 import torch
-import torchvision.transforms as T
 from nodes.impl.upscale.tiler import MaxTileSize, NoTiling, Tiler
 from nodes.impl.pytorch.auto_split import pytorch_auto_split
-from nodes.load_model import load_model
 from nodes.impl.pytorch.types import PyTorchSRModel
+from nodes.impl.image_utils import to_uint8
+from nodes.load_model import load_model
 from modules import devices, scripts, script_callbacks # pylint: disable=wrong-import-order
 from modules.shared import opts, log, paths, readfile, OptionInfo # pylint: disable=wrong-import-order
 from modules.upscaler import Upscaler, UpscalerData # pylint: disable=wrong-import-order
@@ -31,7 +31,6 @@ class UpscalerChaiNNer(Upscaler):
         self.predefined = []
         self.fp16 = False
         self.scalers = self.find_scalers()
-        self.transform = T.Compose([T.ToTensor(), T.ToPILImage()])
 
     def find_scalers(self):
         loaded = []
@@ -92,15 +91,13 @@ class UpscalerChaiNNer(Upscaler):
         model = self.load_model(selected_model)
         if model is None:
             return img
-        np_img = np.array(img)
         tile_size = opts.data.get('upscaler_tile_size', 192)
         try:
             with torch.no_grad():
-                upscaled = pytorch_auto_split(img=np_img, model=model, device=devices.device, use_fp16=self.fp16, tiler=self.parse_tile_size_input(tile_size))
-                norm = 255.0 * torch.from_numpy(upscaled)
-                norm = 255.0 * (upscaled / upscaled.max()) # full range causes some color clipping
-                img = PIL.Image.fromarray(np.uint8(norm))
-                # img = self.transform(upscaled)
+                img_np = np.array(img)
+                img_upscaled = pytorch_auto_split(img=img_np, model=model, device=devices.device, use_fp16=self.fp16, tiler=self.parse_tile_size_input(tile_size))
+                img_norm = to_uint8(img_upscaled, normalized=False)
+                img = PIL.Image.fromarray(img_norm)
         except Exception as e:
             log.error(f"Upscaler error: type={self.name} model={selected_model} error={e}")
         devices.torch_gc()
