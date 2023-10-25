@@ -98,7 +98,8 @@ class UpscalerChaiNNer(Upscaler):
             with torch.no_grad():
                 upscaled = pytorch_auto_split(img=np_img, model=model, device=devices.device, use_fp16=self.fp16, tiler=self.parse_tile_size_input(tile_size))
                 norm = 255.0 * torch.from_numpy(upscaled)
-                norm = 255.0 * (upscaled / upscaled.max()) # full range causes some color clipping
+                norm = torch.clamp(norm, min=0) # set negative value clipping to zero
+                norm = 255.0 * (norm / norm.max()) # full range causes some color clipping
                 img = PIL.Image.fromarray(np.uint8(norm))
                 # img = self.transform(upscaled)
         except Exception as e:
