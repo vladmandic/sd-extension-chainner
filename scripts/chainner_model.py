@@ -1,15 +1,17 @@
 import os
+from typing import TYPE_CHECKING
 import PIL.Image
 import numpy as np
 import torch
 from nodes.impl.upscale.tiler import MaxTileSize, NoTiling, Tiler
 from nodes.impl.pytorch.auto_split import pytorch_auto_split
-from nodes.impl.pytorch.types import PyTorchSRModel
-from nodes.impl.image_utils import to_uint8
+from nodes.impl import image_utils
 from nodes.load_model import load_model
 from modules import devices, scripts, script_callbacks # pylint: disable=wrong-import-order
 from modules.shared import opts, log, paths, readfile, OptionInfo # pylint: disable=wrong-import-order
 from modules.upscaler import Upscaler, UpscalerData # pylint: disable=wrong-import-order
+if TYPE_CHECKING:
+    from nodes.impl.pytorch.types import PyTorchSRModel
 
 
 predefined_models = os.path.join(scripts.basedir(), 'models.json')
@@ -93,10 +95,12 @@ class UpscalerChaiNNer(Upscaler):
             return img
         tile_size = opts.data.get('upscaler_tile_size', 192)
         try:
-            with torch.no_grad():
-                img_np = np.array(img)
-                img_upscaled = pytorch_auto_split(img=img_np, model=model, device=devices.device, use_fp16=self.fp16, tiler=self.parse_tile_size_input(tile_size))
-                img_norm = to_uint8(img_upscaled, normalized=False)
+            with devices.inference_context(), devices.without_autocast():
+                img_upscaled = pytorch_auto_split(img=np.array(img), model=model, device=devices.device, use_fp16=self.fp16, tiler=self.parse_tile_size_input(tile_size))
+                if np.isnan(img_upscaled).any():
+                    log.error(f"Upscaler error: type={self.name} model={selected_model} device={devices.device} tile={tile_size} error=NaN")
+                    return img
+                img_norm = image_utils.to_uint8(img_upscaled, normalized=False)
                 img = PIL.Image.fromarray(img_norm)
         except Exception as e:
             log.error(f"Upscaler error: type={self.name} model={selected_model} error={e}")

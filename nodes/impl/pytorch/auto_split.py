@@ -1,38 +1,27 @@
 from __future__ import annotations
-import gc
+from typing import TYPE_CHECKING
 import numpy as np
-import torch
 from ..upscale.auto_split import Split, Tiler, auto_split
 from .utils import np2tensor, safe_cuda_cache_empty, tensor2np
-from .types import PyTorchModel
+if TYPE_CHECKING:
+    from nodes.impl.pytorch.types import PyTorchModel
+    import torch
 
 
-@torch.inference_mode()
-def pytorch_auto_split(
-    img: np.ndarray,
-    model: PyTorchModel,
-    device: torch.device,
-    use_fp16: bool,
-    tiler: Tiler,
-) -> np.ndarray:
+def pytorch_auto_split(img: np.ndarray, model: PyTorchModel, device: torch.device, use_fp16: bool, tiler: Tiler) -> np.ndarray:
     model = model.to(device)
-    model = model.half() if use_fp16 else model.float()
+    if use_fp16:
+        model = model.half()
+    # model = model.half() if use_fp16 else model.float()
 
     def upscale(img: np.ndarray, _):
         img_tensor = np2tensor(img, change_range=True)
-
         d_img = None
         try:
             d_img = img_tensor.to(device)
             d_img = d_img.half() if use_fp16 else d_img.float()
-
             result = model(d_img)
-            result = tensor2np(
-                result.detach().cpu().detach(),
-                change_range=False,
-                imtype=np.float32,
-            )
-
+            result = tensor2np(result.detach().cpu().detach(), change_range=False, imtype=np.float32)
             del d_img
             return result
         except RuntimeError as e:
@@ -45,7 +34,6 @@ def pytorch_auto_split(
                     except:
                         pass
                     del d_img
-                gc.collect()
                 safe_cuda_cache_empty()
                 return Split()
             else:
@@ -57,5 +45,4 @@ def pytorch_auto_split(
     finally:
         del model
         del device
-        gc.collect()
         safe_cuda_cache_empty()
