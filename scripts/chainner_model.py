@@ -2,19 +2,19 @@ import os
 from typing import TYPE_CHECKING
 import PIL.Image
 import numpy as np
-import torch
 from nodes.impl.upscale.tiler import MaxTileSize, NoTiling, Tiler
 from nodes.impl.pytorch.auto_split import pytorch_auto_split
 from nodes.impl import image_utils
 from nodes.load_model import load_model
 from modules import devices, scripts, script_callbacks # pylint: disable=wrong-import-order
-from modules.shared import opts, log, paths, readfile, listdir, OptionInfo # pylint: disable=wrong-import-order
+from modules.shared import opts, log, paths, readfile, OptionInfo # pylint: disable=wrong-import-order
 from modules.upscaler import Upscaler, UpscalerData # pylint: disable=wrong-import-order
 if TYPE_CHECKING:
     from nodes.impl.pytorch.types import PyTorchSRModel
 
 
 predefined_models = os.path.join(scripts.basedir(), 'models.json')
+
 
 def friendly_fullname(file: str):
     from urllib.parse import urlparse
@@ -49,7 +49,7 @@ class UpscalerChaiNNer(Upscaler):
         if not os.path.exists(self.user_path):
             return scalers
         downloaded = 0
-        for fn in listdir(self.user_path): # from folder
+        for fn in os.listdir(self.user_path): # from folder
             if not fn.endswith('.pth'):
                 continue
             downloaded += 1
