@@ -1,5 +1,1 @@
-rich
 sanic
-torch
-numpy==1.24.4
-Pillow==9.5.0
