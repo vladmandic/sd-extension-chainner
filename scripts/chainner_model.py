@@ -97,6 +97,8 @@ class UpscalerChaiNNer(Upscaler):
         try:
             with devices.inference_context(), devices.without_autocast():
                 img_upscaled = pytorch_auto_split(img=np.array(img), model=model, device=devices.device, use_fp16=self.fp16, tiler=self.parse_tile_size_input(tile_size))
+                if img_upscaled is None:
+                    return img
                 if np.isnan(img_upscaled).any():
                     log.error(f"Upscaler error: type={self.name} model={selected_model} device={devices.device} tile={tile_size} error=NaN")
                     return img
@@ -104,6 +106,8 @@ class UpscalerChaiNNer(Upscaler):
                 img = PIL.Image.fromarray(img_norm)
         except Exception as e:
             log.error(f"Upscaler error: type={self.name} model={selected_model} error={e}")
+            from modules import errors
+            errors.display(e, 'ChaiNNer')
         devices.torch_gc()
         if opts.data.get('upscaler_unload', False) and selected_model in self.models:
             del self.models[selected_model]

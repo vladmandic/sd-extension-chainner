@@ -84,6 +84,14 @@ def _exact_split(
     raise ValueError(f"Aborting after {MAX_ITER} splits. Unable to upscale image.")
 
 
+def interrupted():
+    try:
+        from modules import shared
+        return shared.state.interrupted
+    except Exception:
+        return False
+
+
 def _max_split(
     img: np.ndarray,
     upscale: SplitImageOp,
@@ -147,6 +155,8 @@ def _max_split(
                 if y < start_y:
                     continue
                 for x in range(0, tile_count_x):
+                    if interrupted():
+                        break
                     if y == start_y and x < start_x:
                         continue
                     tile = Region(x * tile_size_x, y * tile_size_y, tile_size_x, tile_size_y).intersect(img_region)
@@ -181,5 +191,4 @@ def _max_split(
                     tile.scale(scale).write_into(result, upscale_result)
                     progress.update(task, advance=1, description="Upscaling")
 
-    assert result is not None
     return result
