@@ -61,7 +61,7 @@ class UpscalerChaiNNer(Upscaler):
                 scalers.append(scaler)
                 loaded.append(file_name)
         discovered = len(scalers) - predefined
-        log.debug(f'chaiNNer models: path="{self.user_path}" defined={predefined} discovered={discovered} downloaded={downloaded}')
+        log.debug(f'Available chaiNNer: path="{self.user_path}" defined={predefined} discovered={discovered} downloaded={downloaded}')
         return scalers
 
     def load_model(self, path: str):
