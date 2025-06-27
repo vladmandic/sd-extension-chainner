@@ -1,4 +1,6 @@
 [
+    ["4x DAT2 UltraSharp-v2", "https://huggingface.co/Kim2091/UltraSharpV2/resolve/main/4x-UltraSharpV2.pth"],
+    ["4x RealPLKSR UltraSharp-v2", "https://huggingface.co/Kim2091/UltraSharpV2/resolve/main/4x-UltraSharpV2_Lite.pth"],
     ["4x DAT", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/DAT-4x.pth"],
     ["2x HAT", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/HAT-2x.pth"],
     ["3x HAT", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/HAT-3x.pth"],
