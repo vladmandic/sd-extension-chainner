@@ -147,8 +147,8 @@ def _max_split(
         tile_size_x = math.ceil(w / tile_count_x)
         tile_size_y = math.ceil(h / tile_count_y)
         # logger.debug(f"chaiNNer: Currently {tile_count_x}x{tile_count_y} tiles each {tile_size_x}x{tile_size_y}px.")
-        with Progress(TextColumn('[cyan]{task.description}'), BarColumn(), TaskProgressColumn(), TimeRemainingColumn(), TimeElapsedColumn(), console=console) as progress:
-            task = progress.add_task(description="Upscaling", total=tile_count_y * tile_count_x)
+        with Progress(TextColumn('[cyan]Upscaling'), BarColumn(), TaskProgressColumn(), TimeRemainingColumn(), TimeElapsedColumn(), TextColumn('[yellow]{task.description}'), console=console) as progress:
+            task = progress.add_task(description=f"x={tile_count_x} y={tile_count_y} {tile_size_x}x{tile_size_y}px", total=tile_count_y * tile_count_x)
             for y in range(0, tile_count_y):
                 if restart:
                     break
@@ -177,9 +177,6 @@ def _max_split(
                     # figure out by how much the image was upscaled by
                     up_h, up_w, _ = get_h_w_c(upscale_result)
                     current_scale = up_h // padded_tile.height
-                    assert current_scale > 0
-                    assert padded_tile.height * current_scale == up_h
-                    assert padded_tile.width * current_scale == up_w
                     if result is None:
                         # allocate the result image
                         scale = current_scale
@@ -189,6 +186,6 @@ def _max_split(
                     upscale_result = pad.scale(scale).remove_from(upscale_result)
                     # copy into result image
                     tile.scale(scale).write_into(result, upscale_result)
-                    progress.update(task, advance=1, description="Upscaling")
+                    progress.update(task, advance=1, description=f"x={x}/{tile_count_x} y={y}/{tile_count_y} {tile_size_x}x{tile_size_y}px")
 
     return result
