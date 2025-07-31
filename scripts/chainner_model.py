@@ -112,7 +112,7 @@ class UpscalerChaiNNer(Upscaler):
         if opts.data.get('upscaler_unload', False) and selected_model in self.models:
             del self.models[selected_model]
             log.debug(f"Upscaler unloaded: type={self.name} model={selected_model}")
-            devices.torch_gc(force=True)
+            devices.torch_gc(force=True, reason='upscale')
         return img
 
 
