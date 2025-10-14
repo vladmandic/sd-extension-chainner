@@ -171,7 +171,7 @@ def _max_split(
                         new_tile_size_y = math.ceil(h / new_tile_count_y)
                         start_x = (x * tile_size_x) // new_tile_size_x
                         start_y = (y * tile_size_x) // new_tile_size_y
-                        logger.debug(f"chaiNNer: Split occurred. New tile size is {max_tile_size}. Starting at {start_x},{start_y}.")
+                        # logger.debug(f"chaiNNer: Split occurred. New tile size is {max_tile_size}. Starting at {start_x},{start_y}.")
                         restart = True
                         break
                     # figure out by how much the image was upscaled by
