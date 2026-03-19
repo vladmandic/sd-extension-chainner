@@ -1,4 +1,4 @@
-import os
+import traceback
 from typing import Tuple
 import torch
 from nodes.impl.pytorch.model_loading import load_state_dict
@@ -45,10 +45,11 @@ def load_model(path: str, device, fp16: bool = False) -> Tuple[PyTorchModel, str
             if "state_dict" in checkpoint:
                 checkpoint = checkpoint["state_dict"]
             state_dict = parse_ckpt_state_dict(checkpoint)
+        elif extension == ".safetensors":
+            from safetensors.torch import load_file  # type: ignore
+            state_dict = load_file(path, device='cpu')
         else:
-            raise ValueError(
-                f"Unsupported model file extension {extension}. Please try a supported model type."
-            )
+            raise ValueError(f"Unsupported model file extension {extension}.")
 
         model = load_state_dict(state_dict)
 
@@ -62,9 +63,8 @@ def load_model(path: str, device, fp16: bool = False) -> Tuple[PyTorchModel, str
         else:
             model = model.float()
     except Exception as e:
-        raise ValueError(
-            f"Model {os.path.basename(path)} is unsupported by chaiNNer. Please try"
-            " another."
-        ) from e
+        # import traceback
+        # traceback.print_exc()
+        raise ValueError(f"Model {os.path.basename(path)} is unsupported by chaiNNer") from e
 
     return model

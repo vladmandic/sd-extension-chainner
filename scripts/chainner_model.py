@@ -50,7 +50,7 @@ class UpscalerChaiNNer(Upscaler):
             return scalers
         downloaded = 0
         for fn in os.listdir(self.user_path): # from folder
-            if not fn.endswith('.pth'):
+            if not fn.endswith(".pth") and not fn.endswith(".pt") and not fn.endswith(".ckpt") and not fn.endswith(".safetensors"):
                 continue
             downloaded += 1
             file_name = os.path.join(self.user_path, fn)
