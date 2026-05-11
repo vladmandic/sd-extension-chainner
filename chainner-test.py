@@ -31,7 +31,7 @@ def parse_tile_size_input(tile_size: int) -> Tiler:
     return MaxTileSize(tile_size)
 
 
-def upscale(image: Image, model: PyTorchSRModel, tile: int = 256):
+def upscale(image: Image.Image, model: PyTorchSRModel, tile: int = 256):
     img = np.array(image)
     with torch.no_grad():
         upscaled = pytorch_auto_split(img, model=model, device=device, use_fp16=fp16, tiler=parse_tile_size_input(tile))
