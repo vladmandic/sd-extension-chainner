@@ -20,7 +20,7 @@ class BaseSession:
         self.size = size
 
     def normalize(self, img: PILImage) -> Dict[str, np.ndarray]:
-        im = img.convert("RGB").resize(self.size, Image.LANCZOS)
+        im = img.convert("RGB").resize(self.size, Image.Resampling.LANCZOS)
         im_ary = np.array(im)
         im_ary = im_ary / np.max(im_ary)
 
