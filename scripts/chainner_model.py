@@ -1,7 +1,8 @@
 import os
 from typing import TYPE_CHECKING
-import PIL.Image
+from PIL import Image
 import numpy as np
+import torch
 from nodes.impl.upscale.tiler import MaxTileSize, NoTiling, Tiler
 from nodes.impl.pytorch.auto_split import pytorch_auto_split
 from nodes.impl import image_utils
@@ -64,12 +65,13 @@ class UpscalerChaiNNer(Upscaler):
         log.debug(f'Available chaiNNer: path="{self.user_path}" defined={predefined} discovered={discovered} downloaded={downloaded}')
         return scalers
 
-    def load_model(self, path: str):
+    def load_model(self, path: str, quiet = False):
         info = self.find_model(path)
         if info is None:
             return
         if self.models.get(info.local_data_path, None) is not None:
-            log.debug(f"Upscaler cached: type={self.name} model={info.local_data_path}")
+            if not quiet:
+                log.debug(f"Upscaler cached: type={self.name} model={info.local_data_path}")
             model=self.models[info.local_data_path]
         else:
             model: PyTorchSRModel = load_model(info.local_data_path, device=devices.device, fp16=self.fp16)
@@ -88,27 +90,43 @@ class UpscalerChaiNNer(Upscaler):
             raise ValueError(f"ChaiNNer invalid tile size: {tile_size}")
         return MaxTileSize(tile_size)
 
-    def do_upscale(self, img: PIL.Image.Image, selected_model):
+    def do_upscale(self, img: Image.Image | torch.Tensor | np.ndarray, selected_model: str | None = None, output_type='pil', quiet=False):
         devices.torch_gc()
-        model = self.load_model(selected_model)
+        model = self.load_model(selected_model, quiet=quiet)
         if model is None:
             return img
         tile_size = opts.data.get('upscaler_tile_size', 192)
         try:
             with devices.inference_context(), devices.without_autocast():
-                img_upscaled = pytorch_auto_split(img=np.array(img), model=model, device=devices.device, use_fp16=self.fp16, tiler=self.parse_tile_size_input(tile_size))
+                if isinstance(img, Image.Image):
+                    data = np.array(img)
+                elif isinstance(img, torch.Tensor):
+                    data = img
+                    if data.max() > 2.0: # tensor is in [0,255] range, convert to [0,1]
+                        data = data.div_(255.0)
+                    if data.min() < 0: # tensor is in [-1,1] range, convert to [0,1]
+                        data = (data + 1.0) / 2.0
+                img_upscaled = pytorch_auto_split(img=data,
+                                                  model=model,
+                                                  device=devices.device,
+                                                  use_fp16=self.fp16,
+                                                  tiler=self.parse_tile_size_input(tile_size),
+                                                 )
                 if img_upscaled is None:
                     return img
-                if np.isnan(img_upscaled).any():
-                    log.error(f"Upscaler error: type={self.name} model={selected_model} device={devices.device} tile={tile_size} error=NaN")
-                    return img
-                img_norm = image_utils.to_uint8(img_upscaled, normalized=False)
-                img = PIL.Image.fromarray(img_norm)
+                if isinstance(img_upscaled, np.ndarray):
+                    img_norm = image_utils.to_uint8(img_upscaled, normalized=False)
+                    if output_type == 'pil':
+                        img = Image.fromarray(img_norm)
+                    elif output_type == 'nd':
+                        img = img_norm
+                else:
+                    img = img_upscaled # output_type == 'tensor'
         except Exception as e:
             log.error(f"Upscaler error: type={self.name} model={selected_model} error={e}")
             from modules import errors
             errors.display(e, 'ChaiNNer')
-        devices.torch_gc()
+        devices.torch_gc(fast=True, reason='upscale')
         if opts.data.get('upscaler_unload', False) and selected_model in self.models:
             del self.models[selected_model]
             log.debug(f"Upscaler unloaded: type={self.name} model={selected_model}")

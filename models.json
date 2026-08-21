@@ -23,5 +23,7 @@
     ["4x HAT Helaman-Lexica", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/HAT-Helaman-Lexica-4x.pth"],
     ["4x HAT Helaman-Nomos8kL", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/HAT-Helaman-Nomos8kL-4x.pth"],
     ["4x OmniSR Helaman-HFA2k", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/OmniSR-Helaman-HFA2k-2x.pth"],
-    ["4x SwinIR Helaman-Lexica", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/SwinIR-Helaman-Lexica-2x.pth"]
+    ["4x SwinIR Helaman-Lexica", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/SwinIR-Helaman-Lexica-2x.pth"],
+    ["2x RealESRGAN Compact", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/RealESRGAN-2x-Compact.pth"],
+    ["2x RealESRGAN UltraCompact", "https://huggingface.co/vladmandic/sdnext-upscalers/resolve/main/RealESRGAN-2x-UltraCompact.pth"]
 ]
