@@ -75,7 +75,7 @@ class UpscalerChaiNNer(Upscaler):
             model=self.models[info.local_data_path]
         else:
             model: PyTorchSRModel = load_model(info.local_data_path, device=devices.device, fp16=self.fp16)
-            log.info(f"Upscaler loaded: type={self.name} model='{info.local_data_path}'")
+            log.info(f'Upscaler loaded: type="{self.name}" model="{info.local_data_path}"')
             self.models[info.local_data_path] = model
         return model
 
