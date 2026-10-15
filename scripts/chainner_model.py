@@ -91,8 +91,8 @@ class UpscalerChaiNNer(Upscaler):
         return MaxTileSize(tile_size)
 
     def do_upscale(self, img: Image.Image | torch.Tensor | np.ndarray, selected_model: str | None = None, output_type='pil', quiet=False):
-        devices.torch_gc()
         model = self.load_model(selected_model, quiet=quiet)
+        devices.torch_gc()
         if model is None:
             return img
         tile_size = opts.data.get('upscaler_tile_size', 192)
